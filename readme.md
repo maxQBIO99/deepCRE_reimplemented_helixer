@@ -18,8 +18,15 @@ I have provided two example input files:
 
 example_input.csv: For training. This is an example of how your input training file
 should look. You can add more rows, where each row will be one species of interest.
+This file contains primarily 6 columns:
 
-example_predict_input.csv: For predictions, modisco, shap runs.
+genome| gtf | tpm_target | output_name |number of chromosomes | pickle_key_id |
+
+example_predict_input.csv: For predictions, modisco, shap runs. his file contains
+the following columns:
+
+genome| gtf | tpm_target | output_name |number of chromosomes | 
+
 
 ## Usage
 To train models use the following commands
