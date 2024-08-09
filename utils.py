@@ -229,7 +229,6 @@ def predict(genome, annot, tpm_targets, upstream, downstream, val_chromosome, ig
     annot = annot[annot['Feature'] == 'gene']
     annot = annot[['Chromosome', 'Start', 'End', 'Strand', 'gene_id']]
     annot = annot[annot['Chromosome'] == val_chromosome]
-    annot = annot.sample(n=100) #######################################################################################
     expected_final_size = 2 * (upstream + downstream) + 20
 
     x, y, gene_ids = [], [], []
