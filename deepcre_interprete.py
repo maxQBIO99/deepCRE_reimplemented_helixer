@@ -23,8 +23,8 @@ parser.add_argument('--ignore_small_genes', help="Ignore small genes, can be yes
 
 args = parser.parse_args()
 data = pd.read_csv(args.input, sep=',', header=None,
-                   dtype={0: str, 1: str, 2: str, 3: str, 4: int, 5: str},
-                   names=['genome', 'gtf', 'tpm', 'output', 'counts'])
+                   dtype={0: str, 1: str, 2: str, 3: str, 4: str},
+                   names=['genome', 'gtf', 'tpm', 'output', 'chroms'])
 print(data.head())
 if data.shape[1] != 5:
     raise Exception("Input file incorrect. Your input file must contain 5 columns and must be .csv")

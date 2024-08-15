@@ -118,10 +118,16 @@ def extract_seq(genome, annot, tpm_targets, upstream, downstream, genes_picked, 
     genome = Fasta(filename=f"genome/{genome}", as_raw=True, read_ahead=10000, sequence_always_upper=True)
     tpms = pd.read_csv(filepath_or_buffer=f"tpm_counts/{tpm_targets}", sep=',')
     tpms.set_index('gene_id', inplace=True)
-    annot = pr.read_gtf(f=f"gene_models/{annot}", as_df=True)
-    annot = annot[annot['gene_biotype'] == 'protein_coding']
-    annot = annot[annot['Feature'] == 'gene']
-    annot = annot[['Chromosome', 'Start', 'End', 'Strand', 'gene_id']]
+    print(tpms.head())
+    if annot.endswith('.gtf'):
+        annot = pr.read_gtf(f=f"gene_models/{annot}", as_df=True)
+        annot = annot[annot['gene_biotype'] == 'protein_coding']
+        annot = annot[annot['Feature'] == 'gene']
+        annot = annot[['Chromosome', 'Start', 'End', 'Strand', 'gene_id']]
+    else:
+        annot = pr.read_gff3(f'gene_models/{annot}', as_df=True)
+        annot = annot[annot['Feature'] == 'gene']
+        annot = annot[['Chromosome', 'Start', 'End', 'Strand', 'ID']]
     expected_final_size = 2*(upstream + downstream) + 20
 
     train_seqs, val_seqs, train_targets, val_targets = [], [], [], []
@@ -224,11 +230,15 @@ def predict(genome, annot, tpm_targets, upstream, downstream, val_chromosome, ig
     genome = Fasta(filename=f"genome/{genome}", as_raw=True, read_ahead=10000, sequence_always_upper=True)
     tpms = pd.read_csv(filepath_or_buffer=f"tpm_counts/{tpm_targets}", sep=',')
     tpms.set_index('gene_id', inplace=True)
-    annot = pr.read_gtf(f=f"gene_models/{annot}", as_df=True)
-    annot = annot[annot['gene_biotype'] == 'protein_coding']
-    annot = annot[annot['Feature'] == 'gene']
-    annot = annot[['Chromosome', 'Start', 'End', 'Strand', 'gene_id']]
-    annot = annot[annot['Chromosome'] == val_chromosome]
+    if annot.endswith('.gtf'):
+        annot = pr.read_gtf(f=f"gene_models/{annot}", as_df=True)
+        annot = annot[annot['gene_biotype'] == 'protein_coding']
+        annot = annot[annot['Feature'] == 'gene']
+        annot = annot[['Chromosome', 'Start', 'End', 'Strand', 'gene_id']]
+    else:
+        annot = pr.read_gff3(f'gene_models/{annot}', as_df=True)
+        annot = annot[annot['Feature'] == 'gene']
+        annot = annot[['Chromosome', 'Start', 'End', 'Strand', 'ID']]
     expected_final_size = 2 * (upstream + downstream) + 20
 
     x, y, gene_ids = [], [], []
@@ -342,7 +352,8 @@ def extract_scores(genome, annot, tpm_targets, upstream, downstream, n_chromosom
     if not os.path.exists('results/shap'):
         os.makedirs('results/shap')
     shap_actual_scores, shap_hypothetical_scores, one_hots_seqs, gene_ids_seqs, preds_seqs = [], [], [], [], []
-    for val_chrom in range(1, n_chromosome + 1):
+    chromosomes = pd.read_csv(filepath_or_buffer=f'genome/{n_chromosome}', header=None).values.ravel().tolist()
+    for val_chrom in chromosomes:
         x, y, preds, gene_ids, model = predict(genome, annot, tpm_targets, upstream, downstream, str(val_chrom),
                                                ignore_small_genes, output_name, model_case)
         preds = preds > 0.5
