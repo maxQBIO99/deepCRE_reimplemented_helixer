@@ -20,14 +20,17 @@ example_input.csv: For training. This is an example of how your input training f
 should look. You can add more rows, where each row will be one species of interest.
 This file contains primarily 6 columns:
 
-genome| gtf | tpm_target | output_name |number of chromosomes | pickle_key_id |
+genome| gtf | tpm_target | output_name |name of chromosomes file | pickle_key_id |
 
 example_predict_input.csv: For predictions, modisco, shap runs. his file contains
 the following columns:
 
-genome| gtf | tpm_target | output_name |number of chromosomes | 
+genome| gtf | tpm_target | output_name |name of chromosomes file | 
 
-
+An example of the chromosomes file is uploaded in the genome subdirectory. This file must
+always be in the genome subdirectory. Every new species requires its own chromosome file.
+This file is a single column csv file that has the name of each chromosome on a separate 
+line.
 ## Usage
 To train models use the following commands
 ```shell
