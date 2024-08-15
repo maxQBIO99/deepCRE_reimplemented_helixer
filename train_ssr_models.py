@@ -27,16 +27,21 @@ parser.add_argument('--ignore_small_genes', help="Ignore small genes, can be yes
 args = parser.parse_args()
 
 data = pd.read_csv(args.input, sep=',', header=None,
-                   dtype={0: str, 1: str, 2: str, 3: str, 4: int, 5: str},
-                   names=['genome', 'gtf', 'tpm', 'output', 'counts', 'p_key'])
+                   dtype={0: str, 1: str, 2: str, 3: str, 4: str, 5: str},
+                   names=['genome', 'gtf', 'tpm', 'output', 'chroms', 'p_key'])
 print(data.head())
 if data.shape[1] != 6:
     raise Exception("Input file incorrect. Your input file must contain 6 columns and must be .csv")
 
 
-for genome, gtf, tpm_counts, output_name, num_chromosomes, pickled_key in data.values:
+for genome, gtf, tpm_counts, output_name, chromosomes_file, pickled_key in data.values:
+    print(f'Training on genome: ---------------------\n')
+    print(genome)
+    print('\n------------------------------\n')
     results_genome = []
-    for val_chrom in range(1, num_chromosomes + 1):
+    chromosomes = pd.read_csv(filepath_or_buffer=f'genome/{chromosomes_file}', header=None).values.ravel().tolist()
+    for val_chrom in chromosomes:
+        print(f"Using chromosome {val_chrom} as validation chromosome")
         results = train_deep_cre(genome=genome,
                                  annot=gtf,
                                  tpm_targets=tpm_counts,
